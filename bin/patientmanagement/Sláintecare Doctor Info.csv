@@ -1,0 +1,33 @@
+Name,Department,Speciality,Surgeon,On Duty
+Jack,Cardiology,Cardiology,Yes,No
+Emily,Cardiology,Cardiology,Yes,Yes
+Noah,Cardiology,Cardiology,No,Yes
+Grace,Rheumatology,Rheumatology,Yes,Yes
+James,Rheumatology,Rheumatology,No,Yes
+Fiadh,Rheumatology,Rheumatology,No,Yes
+Rían,ENT,ENT,Yes,No
+Sophie,ENT,ENT,Yes,No
+Charlie,ENT,ENT,No,Yes
+Lily,Ophthalmology,Ophthalmology,Yes,No
+Oisín,Ophthalmology,Ophthalmology,No,Yes
+Éabha,Ophthalmology,Ophthalmology,No,Yes
+Tadgh,Occupational Therapy,Occupational Therapy,No,Yes
+Ava,Occupational Therapy,Occupational Therapy,No,Yes
+Liam,Occupational Therapy,Occupational Therapy,No,No
+Mia,Radiology,Radiology,No,No
+Cillian,Radiology,Radiology,No,Yes
+Ellie,Radiology,Radiology,No,No
+Daniel,Oncology,Oncology,Yes,Yes
+Olivia,Oncology,Oncology,Yes,Yes
+Fionn,Oncology,Oncology,No,Yes
+Emma,OB/GYN,OB/GYN,Yes,Yes
+Michael,OB/GYN,OB/GYN,Yes,Yes
+Amelia,OB/GYN,OB/GYN,Yes,Yes
+Conor,Emergency,Cardiology,Yes,No
+Hannah,Emergency,Rheumatology,Yes,No
+Finn,Emergency,ENT,Yes,Yes
+Ella,Emergency,Ophthalmology,Yes,Yes
+Patrick,Emergency,Occupational Therapy,Yes,Yes
+Freya,Emergency,Radiology,Yes,Yes
+Thomas,Emergency,Oncology,Yes,Yes
+Lucy,Emergency,OB/GYN,Yes,Yes
