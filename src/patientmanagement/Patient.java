@@ -6,6 +6,7 @@ public class Patient implements PatientInterface
     private String lastName;
     private int patientId;
     private String department;
+    private boolean inPatient;
     private String[] complaints;
 
     public void setFirstName(String firstName)
@@ -39,21 +40,14 @@ public class Patient implements PatientInterface
         return department;
     }
 
+    public boolean isInpatient()
+    {
+        return inPatient;
+    }
+
     public String[] getComplaints()
     {
         return complaints;
-    }
-
-    public boolean isInpatient()
-    {
-        
-    }
-
-    public Patient(String firstName, String lastName, String[] complaints)
-    {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.complaints = complaints;
     }
 
     public boolean needsMedication()
@@ -64,5 +58,35 @@ public class Patient implements PatientInterface
     public boolean needsSurgery()
     {
         return false;
+    }
+
+    public void transferDepartment(String department)
+    {
+        this.department = department;
+    }
+
+    public void haveSurgery(String speciality)
+    {
+
+    }
+
+    public void prescribeMedication(String speciality)
+    {
+
+    }
+
+    public void admitInpatient(String department)
+    {
+        inPatient = true;
+    }
+
+    public void dischargeInpatient()
+    {
+        inPatient = false;
+    }
+
+    public Patient()
+    {
+        
     }
 }
