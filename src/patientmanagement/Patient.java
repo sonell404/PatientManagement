@@ -2,91 +2,61 @@ package patientmanagement;
 
 public class Patient implements PatientInterface
 {
-    private String firstName;
-    private String lastName;
-    private int patientId;
+    private String name;
+    private int patientID;
     private String department;
-    private boolean inPatient;
+    private boolean isInpatient;
     private String[] complaints;
+    private boolean needsMedication;
+    private boolean needsSurgery;
 
-    public void setFirstName(String firstName)
-    {
-        this.firstName = firstName;
-    }
-    public void setLastName(String lastName)
-    {
-        this.lastName = lastName;
-    }
     public String getName()
     {
-        return firstName + lastName;
-    }
-
-    public void setPatientID(int patientID)
-    {
-        this.patientId = patientID;
+        return name;
     }
     public int getPatientId()
     {
         return patientID;
     }
-
-    public void setDepartment(String department)
-    {
-        this.department = department;
-    }
     public String getDepartment()
     {
         return department;
     }
-
     public boolean isInpatient()
     {
-        return inPatient;
+        return isInpatient;
     }
-
     public String[] getComplaints()
     {
         return complaints;
     }
-
     public boolean needsMedication()
     {
-        return false;
+        return needsMedication;
     }
-
     public boolean needsSurgery()
     {
-        return false;
+        return needsSurgery;
     }
-
+    
     public void transferDepartment(String department)
     {
-        this.department = department;
-    }
 
+    }
     public void haveSurgery(String speciality)
     {
 
     }
-
     public void prescribeMedication(String speciality)
     {
 
     }
-
     public void admitInpatient(String department)
     {
-        inPatient = true;
-    }
 
+    }
     public void dischargeInpatient()
     {
-        inPatient = false;
-    }
 
-    public Patient()
-    {
-        
     }
 }

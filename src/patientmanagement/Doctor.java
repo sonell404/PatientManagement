@@ -19,6 +19,9 @@ public class Doctor
     private boolean canDischargeInPatients;
     private boolean canTransferPatient;
     private boolean canHaveOperations;
+
+    // CURRENT PATIENT
+    private CurrentPatient currentPatient;
     
     // Getters & Setters
     // CSV 
@@ -72,6 +75,86 @@ public class Doctor
         return canHaveOperations;
     }
 
+    public void setCurrentPatient(CurrentPatient currentPatient)
+    {
+        this.currentPatient = currentPatient;
+    }
+    public CurrentPatient getCurrentPatient()
+    {
+        return currentPatient;
+    }
+    public void removeCurrentPatient()
+    {
+        this.currentPatient = null;
+    }
+
+    // PATIENT METHODS
+
+    public void transferDepartment(String department)
+    {
+        if (currentPatient == null)
+        {
+            System.out.println("\nNo current patient");
+        }
+        else
+        {
+            currentPatient.transferDepartment(department);
+        }
+    }
+    public void haveSurgery()
+    {
+        if (currentPatient == null)
+        {
+            System.out.println("\nNo current patient");
+        }
+        else if (!currentPatient.needsSurgery())
+        {
+            System.out.println("\nPatient does not need surgery");
+        }
+        else
+        {
+            currentPatient.haveSurgery(this.specialty);
+        }
+    }
+    public void prescribeMedication()
+    {
+        if (currentPatient == null)
+        {
+            System.out.println("\nNo current patient");
+        }
+        else if (!currentPatient.needsMedication())
+        {
+            System.out.println("\nPatient does not need medication");
+        }
+        else
+        {
+            currentPatient.prescribeMedication(this.specialty);
+        }
+    }
+    public void admitInpatient()
+    {
+        if (currentPatient == null)
+        {
+            System.out.println("\nNo current patient");
+        }
+        else
+        {
+            currentPatient.admitInpatient(this.department);
+        }
+    }
+    public void dischargeInpatient()
+    {
+        if (currentPatient == null)
+        {
+            System.out.println("\nNo current patient");
+        }
+        else
+        {
+            currentPatient.dischargeInpatient();
+            currentPatient = null;
+        }
+    }
+
     // Constructor
     public Doctor(Department department, String speciality, boolean isSurgeon)
     {
@@ -103,7 +186,7 @@ public class Doctor
                 String[] values = line.split(",");
 
                 // If department is emergency and surgery is needed, search for appropriate doctor
-                if ((getDepartment().equalsIgnoreCase("emergency")) && isSurgeon())
+                if ((department.getName().equalsIgnoreCase("emergency")) && isSurgeon())
                 {
                     // If the current doctor meets the criteria needed and is on duty, set the name with current doctor name
                     if (values[1].equalsIgnoreCase("emergency")
@@ -153,6 +236,13 @@ public class Doctor
                     }
                 }
             }
+        }
+        // Catch NullPointerException
+        catch (NullPointerException e)
+        {
+            // Inform user
+            System.out.println("BLEH");
+            e.printStackTrace();
         }
         // Catch FileNotFoundException
         catch (FileNotFoundException e)

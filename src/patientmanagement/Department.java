@@ -1,5 +1,8 @@
 package patientmanagement;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Department 
 {
     // Department variables
@@ -10,6 +13,10 @@ public class Department
     private boolean canDischargeInPatients;
     private boolean canTransferPatient;
     private boolean canHaveOperations;
+    // Patient List
+    private List<CurrentPatient> patientList = new ArrayList<>();
+    // Current Patient
+    private CurrentPatient currentPatient;
 
     public String getName()
     {
@@ -35,6 +42,22 @@ public class Department
     public boolean getCanHaveOperations()
     {
         return canHaveOperations;
+    }
+    public void addPatient(CurrentPatient patient)
+    {
+        patientList.add(patient);
+    }
+    public void removePatient(CurrentPatient patient)
+    {
+        patientList.remove(patient);
+    }
+    public void setCurrentPatient(CurrentPatient currentPatient)
+    {
+        this.currentPatient = currentPatient;
+    }
+    public CurrentPatient getCurrentPatient()
+    {
+        return currentPatient;
     }
 
     public Department(String name)
@@ -104,7 +127,7 @@ public class Department
                 canHaveOperations = true;
                 break;
             }
-            case "ob/gyn" :
+            case "obgyn" :
             {
                 canPrescribeMedication = true;
                 canAdmitPatients = true;
@@ -132,5 +155,7 @@ public class Department
                 break;
             }
         }
+
+        this.name = name;
     }
 }
