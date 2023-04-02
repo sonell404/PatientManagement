@@ -1,11 +1,15 @@
 package patientmanagement;
 
+// SBA22075 - Sonel Ali
+
+// IMPORT LIST
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+// Main CLASS
 public class Main
 {
     // CLASS SCANNER
@@ -35,19 +39,24 @@ public class Main
     // PATIENT ID
     static int patientId = 1;
 
+    // main METHOD
     public static void main(String[] args)
     {
+        // Loop until user ends program
         do
         {
+            // Display menu
             displayOptions(1);
-            initialiseSelection(getMenuSelection(1));
+            // Get and initialise menu selection
+            initialiseSelection(getMenuSelection(1), 1);
         }
         while (yesOrNo("\nContinue to main menu?"));
     }
 
-    // Methods for Main Menu display and Write Menu display
+    // Methods for Main Menu display and Doctor Menu display
     static void displayOptions(int menuId)
     {
+        // If menuId == 1, show main menu
         if (menuId == 1)
         {
             System.out.println();
@@ -56,6 +65,7 @@ public class Main
             System.out.println("3. Doctor Menu");
             System.out.println();
         }
+        // If menuId == 2 and currentPatient is an inPatient, show Doctor Inpatient Menu
         else if (menuId == 2 && inPatient)
         {
             System.out.println();
@@ -65,6 +75,7 @@ public class Main
             System.out.println("4. Discharge in-patient");
             System.out.println();
         }
+        // If menuId == 2 and currentPatient is not an inPatient, show Doctor Outpatient Menu
         else if (menuId == 2 && !inPatient)
         {
             System.out.println();
@@ -78,8 +89,10 @@ public class Main
     // Method for getting users menu selection
     static int getMenuSelection(int menuId)
     {
+        // Initialise menu item limit to 0;
         int limit = 0;
 
+        // Determine what menu is in use, set menu item limit appropriately
         if (menuId == 1)
         {
             limit = 3;
@@ -89,6 +102,7 @@ public class Main
             limit = 4;
         }
 
+        // Declare user response string 
         String response;
         
         // Loop until valid selection has been retrieved
@@ -97,6 +111,7 @@ public class Main
             // Prompt user for input
             System.out.println("Please enter the number of your menu selection");
             System.out.print(">");
+            // Get input
             response = INPUT.nextLine();
             
             // Check response is numeric and also corresponding to menu options
@@ -107,17 +122,19 @@ public class Main
             }
             else
             {
-                // Inform user input must be valid
+                // Inform user that input must be valid
                 System.out.println("\nMenu selection must correspond to menu item!");
             }
         }
         while(true);
         
+        // Once validated, return Integer value of response
         return Integer.parseInt(response);
     } // getMenuSelection
     // Method for validating menu selection
     static boolean isValidSelection(String str, int limit)
     {
+        // Declare integer selection variable
         int selection;
         
         // Check if String is numeric, assign to int variable if it is, return false if not
@@ -133,45 +150,50 @@ public class Main
         // Return true if selection is within range of menu options
         return selection > 0 && selection <= limit;
     } // isValidSelection
-    // Method for executing users selection
-    static void initialiseSelection(int x)
+    // Method for executing users selection from Main Menu
+    static void initialiseSelection(int x, int menuId)
     {
-        switch (x)
+        if (menuId == 1)
         {
-            case 1 : addPatient(); break;
-            case 2 : updatePatient(); break;
-            case 3 : 
+            // Switch statement to call methods corresponding to users menu selection
+            switch (x)
             {
-                displayOptions(2);
-                initialiseDoctorSelection(getMenuSelection(2));
+                case 1 : addPatient(); break;
+                case 2 : updatePatient(); break;
+                case 3 : 
+                {
+                    // Display Doctor Menu, get and initialise user selection
+                    displayOptions(2);
+                    initialiseSelection(getMenuSelection(2), 2);
+                }
+            }
+        }
+        else
+        {
+            if (inPatient)
+            {
+                switch (x)
+                {
+                    case 1 : transferPatient(); break;
+                    case 2 : haveSurgery(); break;
+                    case 3 : prescribeMedication(); break;
+                    case 4 : dischargeInpatient(); break;
+                }
+            }
+            else if (!inPatient)
+            {
+                switch (x)
+                {
+                    case 1 : admitInpatient(); break;
+                    case 2 : transferPatient(); break;
+                    case 3 : prescribeMedication(); break;
+                    case 4 : dischargeOutpatient(); break;
+                }
             }
         }
     } // initialiseSelection
-    // Method for executing users selection
-    static void initialiseDoctorSelection(int x)
-    {
-        if (inPatient)
-        {
-            switch (x)
-            {
-                case 1 : transferPatient(); break;
-                case 2 : haveSurgery(); break;
-                case 3 : prescribeMedication(); break;
-                case 4 : dischargeInpatient(); break;
-            }
-        }
-        else if (!inPatient)
-        {
-            switch (x)
-            {
-                case 1 : admitInpatient(); break;
-                case 2 : transferPatient(); break;
-                case 3 : prescribeMedication(); break;
-                case 4 : dischargeOutpatient(); break;
-            }
-        }
-    } // initialiseSelection
-
+    
+    // Method to create and add patient to patientList
     static void addPatient() 
     {
         // Remove current patient
@@ -180,7 +202,10 @@ public class Main
         // Get patient name
         patientName = takeName();
         // Take complaint string and scan for department names, medication 
-        complaintScanner(takeComplaint());
+        while (!complaintScanner(takeComplaint()))
+        {
+            System.out.println("\nInvalid input. Must contain department name. Please try again");
+        }
         // Create appropriate department object for patient
         createDepartment();
         // Create appropriate doctor object for patient
@@ -205,7 +230,7 @@ public class Main
         if (yesOrNo("\nContinue to doctor menu?"))
         {
             displayOptions(2);
-            initialiseDoctorSelection(getMenuSelection(2));
+            initialiseSelection(getMenuSelection(2), 2);
         }
     }
 
@@ -287,6 +312,7 @@ public class Main
         // Valid complaint checker
         boolean validComplaint = false;
 
+        // DEPARTMENT NAME PATTERNS
         // Cardiology pattern and matcher
         Pattern cardiologyPattern = Pattern.compile("(?i)\\bcardiology\\b");
         Matcher cardiologyMatcher = cardiologyPattern.matcher(complaint);
@@ -318,6 +344,8 @@ public class Main
         Pattern medicationPattern = Pattern.compile("(?i)\\bmedication\\b");
         Matcher medicationMatcher = medicationPattern.matcher(complaint);
 
+        // If complaint contains a department name, take appropriate action
+        // Add key word to complaints list, set speciality, department, needsSurgery, validComplaint 
         if (cardiologyMatcher.find())
         {
             complaintList.add("cardiology");
@@ -389,6 +417,7 @@ public class Main
             isEmergency = true;
         }
         
+        // Check for medication key word excluded from department name check because only 1 department name can be selected
         if (medicationMatcher.find())
         {
             complaintList.add("medication");
@@ -396,6 +425,7 @@ public class Main
             validComplaint = true;
         }
 
+        // Return true if complaint is valid, false if not
         return validComplaint;
     }
 
@@ -461,7 +491,7 @@ public class Main
         }
         else
         {
-            System.out.println("\NNo current department");
+            System.out.println("\nNo current department");
         }
     }
     static void createPatient()
@@ -497,7 +527,10 @@ public class Main
         }
         else
         {
-            complaintScanner(takeComplaint());
+            while (!complaintScanner(takeComplaint()))
+            {
+                System.out.println("\nInvalid complaint. Must contain a department name. Please try again");
+            }
         }
     }
     static void transferPatient()
@@ -543,7 +576,11 @@ public class Main
                     currentDoctor.transferDepartment(response);
                     currentDoctor.removeCurrentPatient();
 
-                    complaintScanner(takeComplaint());
+                    System.out.println("\nEnter new patient complaints");
+                    while (!complaintScanner(takeComplaint()))
+                    {
+                        System.out.println("\nInvalid complaint. Must contain department name. Please try again");
+                    }
                     determineSurgeryNeed();
                     currentDepartment = new Department(response);
                     currentDoctor = new Doctor(currentDepartment, response, needsSurgery);
