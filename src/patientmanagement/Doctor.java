@@ -1,26 +1,36 @@
 package patientmanagement;
 
+// SBA22075 - Sonel Ali
+
+// Imports
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+/*
+ * Instead of implementing the PatientInterface and being obliged to using all of its methods,
+ * I chose to work with a CurrentPatient object that extends the Patient class that 
+ * implements the interface instead and use it's methods that way. This reduces unnecessary 
+ * code in this class.
+ */
+// Doctor class
 public class Doctor 
 {  
-    // CSV Variables
+    // CSV Variables - to be set according to provided csv file
     private String name;
     private String department;
     private String specialty;
     private boolean surgeon;
 
-    // Ability Variables
+    // Ability Variables - to be set by Department object
     private boolean canPrescribeMedication;
     private boolean canAdmitPatients;
     private boolean canDischargeInPatients;
     private boolean canTransferPatient;
     private boolean canHaveOperations;
 
-    // CURRENT PATIENT
+    // Current Patient
     private CurrentPatient currentPatient;
     
     // Getters & Setters
@@ -53,6 +63,15 @@ public class Doctor
     {
         return surgeon;
     }
+    public void setCurrentPatient(CurrentPatient currentPatient)
+    {
+        this.currentPatient = currentPatient;
+    }
+    public CurrentPatient getCurrentPatient()
+    {
+        return currentPatient;
+    }
+
     // Abilities
     public boolean getCanPrescribeMedication()
     {
@@ -75,21 +94,7 @@ public class Doctor
         return canHaveOperations;
     }
 
-    public void setCurrentPatient(CurrentPatient currentPatient)
-    {
-        this.currentPatient = currentPatient;
-    }
-    public CurrentPatient getCurrentPatient()
-    {
-        return currentPatient;
-    }
-    public void removeCurrentPatient()
-    {
-        this.currentPatient = null;
-    }
-
-    // PATIENT METHODS
-
+    // Patient methods
     public void transferDepartment(String department)
     {
         if (currentPatient == null)
@@ -144,7 +149,11 @@ public class Doctor
     }
     public void dischargeInpatient()
     {
-        if (currentPatient == null)
+        if (canDischargeInPatients)
+        {
+            
+        }
+        else if (currentPatient == null)
         {
             System.out.println("\nNo current patient");
         }
@@ -182,59 +191,61 @@ public class Doctor
             // Loop through file
             while ((line = br.readLine()) != null) 
             {
-                // Assign values of line to an array without the comma
+                // Assign values of the current line to an array without the comma
                 String[] values = line.split(",");
 
                 // If department is emergency and surgery is needed, search for appropriate doctor
-                if ((department.getName().equalsIgnoreCase("emergency")) && isSurgeon())
+                if ((department.getName().equalsIgnoreCase("emergency")) 
+                    && isSurgeon()
+                    && values[1].equalsIgnoreCase("emergency")
+                    && values[2].equalsIgnoreCase(getSpecialty())
+                    && values[3].equalsIgnoreCase("yes")
+                    && values[4].equalsIgnoreCase("yes"))
                 {
-                    // If the current doctor meets the criteria needed and is on duty, set the name with current doctor name
-                    if (values[1].equalsIgnoreCase("emergency")
-                        && values[2].equalsIgnoreCase(getSpecialty())
-                        && values[3].equalsIgnoreCase("yes")
-                        && values[4].equalsIgnoreCase("yes"))
-                    {
-                        setName(values[0]);
-                        break;
-                    }
+                    // Set name with appropriate doctors name and break from loop
+                    setName(values[0]);
+                    break;
                 }
                 // If department is emergency and surgery is not needed, search for appropriate doctor
-                else if ((getDepartment().equalsIgnoreCase("emergency")) && !isSurgeon())
-                {
-                    // If the current doctor meets the criteria needed and is on duty, set the name with current doctor name
-                    if (values[1].equalsIgnoreCase("emergency")
+                else if ((getDepartment().equalsIgnoreCase("emergency")) 
+                        && !isSurgeon()
+                        && values[1].equalsIgnoreCase("emergency")
                         && values[2].equalsIgnoreCase(getSpecialty())
-                        && values[3].equalsIgnoreCase("no")
                         && values[4].equalsIgnoreCase("yes"))
-                    {
-                        setName(values[0]);
-                        break;
-                    }
+                {
+                    // Set name with appropriate doctors name and break from loop
+                    setName(values[0]);
+                    break;
                 }
                 // If department is not emergency and surgery is needed, search for appropriate doctor
-                else if (!(getDepartment().equalsIgnoreCase("emergency")) && isSurgeon())
-                {
-                    // If the current doctor meets the criteria needed and is on duty, set the name with current doctor name
-                    if (values[1].equalsIgnoreCase(getSpecialty())
+                else if (!(getDepartment().equalsIgnoreCase("emergency")) 
+                        && isSurgeon()
+                        && values[1].equalsIgnoreCase(getSpecialty())
                         && values[3].equalsIgnoreCase("yes")
                         && values[4].equalsIgnoreCase("yes"))
-                    {
-                        setName(values[0]);
-                        break;
-                    }
+                {
+                    // Set name with appropriate doctors name and break from loop
+                    setName(values[0]);
+                    break;
                 }
                 // If department is not emergency and surgery is not needed, search for appropriate doctor
-                else if (!(getDepartment().equalsIgnoreCase("emergency")) && isSurgeon())
-                {
-                    // If the current doctor meets the criteria needed and is on duty, set the name with current doctor name
-                    if (values[1].equalsIgnoreCase(getSpecialty())
-                        && values[3].equalsIgnoreCase("no")
+                else if (!(getDepartment().equalsIgnoreCase("emergency")) 
+                        && !isSurgeon()
+                        && values[1].equalsIgnoreCase(getSpecialty())
                         && values[4].equalsIgnoreCase("yes"))
-                    {
-                        setName(values[0]);
-                        break;
-                    }
+                {
+                    // Set name with appropriate doctors name and break from loop
+                    setName(values[0]);
+                    break;
                 }
+            }
+
+            // If no appropriate doctor was found, set variables as unavailable, so user can see
+            if (getName() == null)
+            {
+                setName("DOCTOR UNAVAILABLE");
+                setDepartment("DOCTOR UNAVAILABLE");
+                setSpecialty("DOCTOR UNAVAILABLE");
             }
         }
         // Catch NullPointerException

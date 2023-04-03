@@ -1,5 +1,15 @@
 package patientmanagement;
 
+// SBA22075 - Sonel Ali
+
+/*
+ * Main enum for department names
+ * 
+ * I used an enum for the department names because they are unchanging values
+ * and they ensure type-safety and readability. Enums are also easy to iterate over,
+ * so they can also be used for menu displays quite easily. It would also be quite
+ * easy to add a new department without having to change code anywhere else.
+ */
 public enum DepartmentNames 
 {
     CARDIOLOGY(1),

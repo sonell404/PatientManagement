@@ -1,8 +1,8 @@
 package patientmanagement;
 
-import java.util.ArrayList;
-import java.util.List;
+// SBA22075 - Sonel Ali
 
+// Department class
 public class Department 
 {
     // Department variables
@@ -13,16 +13,18 @@ public class Department
     private boolean canDischargeInPatients;
     private boolean canTransferPatient;
     private boolean canHaveOperations;
-    // Patient List
-    private List<CurrentPatient> patientList = new ArrayList<>();
-    // Current Patient
-    private CurrentPatient currentPatient;
 
+    // Getters & Setters
+    public void setName(String name)
+    {
+        this.name = name;
+    }
     public String getName()
     {
         return name;
     }
 
+    // Ability variables
     public boolean getCanPrescribeMedication()
     {
         return canPrescribeMedication;
@@ -43,23 +45,8 @@ public class Department
     {
         return canHaveOperations;
     }
-    public void addPatient(CurrentPatient patient)
-    {
-        patientList.add(patient);
-    }
-    public void removePatient(CurrentPatient patient)
-    {
-        patientList.remove(patient);
-    }
-    public void setCurrentPatient(CurrentPatient currentPatient)
-    {
-        this.currentPatient = currentPatient;
-    }
-    public CurrentPatient getCurrentPatient()
-    {
-        return currentPatient;
-    }
 
+    // Class constructor - sets abilities to appropriate values, depending on department name
     public Department(String name)
     {
         switch (name.toLowerCase())
@@ -156,6 +143,7 @@ public class Department
             }
         }
 
-        this.name = name;
+        // Set department name
+        setName(name);
     }
 }

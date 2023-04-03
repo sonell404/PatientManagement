@@ -1,7 +1,21 @@
 package patientmanagement;
 
+// SBA22075 - Sonel Ali
+
+// Imports
+import java.util.Arrays;
+
+/*
+ * According to the brief, there will be a Patient class used in program testing that implements an interface,
+ * but currently we only have access to the interface and not the class. To ensure my program works
+ * for who ever is testing next, I have created a test Patient class with bare functionality according to 
+ * the interface and then another CurrentPatient class that extends the Patient class. This has allowed me to
+ * implement the functionality provided in the interface and also some extra functionality without 
+ * prohibiting the next person from running the program with the currently unavailable Patient class
+ */
 public class CurrentPatient extends Patient
 {
+    // Class variables
     private String name;
     private int patientId;
     private boolean isInpatient;
@@ -11,6 +25,7 @@ public class CurrentPatient extends Patient
     private String department;
     private String doctor;
 
+    // Getters & Setters
     public String getName()
     {
         return name;
@@ -26,22 +41,21 @@ public class CurrentPatient extends Patient
     public void setComplaints(String[] complaints)
     {
         this.complaints = complaints;
+
+        if (Arrays.asList(complaints).contains("medication"))
+        {
+            System.out.println("Patient needs medication");
+            needsMedication = true;
+        }
+        if (Arrays.asList(complaints).contains("surgery"))
+        {
+            System.out.println("Patient needs surgery");
+            needsSurgery = true;
+        }
     }
     public String[] getComplaints()
     {
         return complaints;
-    }
-    public boolean isInpatient()
-    {
-        return isInpatient;
-    }
-    public boolean needsMedication()
-    {
-        return needsMedication;
-    }
-    public boolean needsSurgery()
-    {
-        return needsSurgery;
     }
     public void setDepartment(String department)
     {
@@ -59,48 +73,67 @@ public class CurrentPatient extends Patient
     {
         return doctor;
     }
+
+    // Boolean check methods
+    public boolean isInpatient()
+    {
+        return isInpatient;
+    }
+    public boolean needsMedication()
+    {
+        return needsMedication;
+    }
+    public boolean needsSurgery()
+    {
+        return needsSurgery;
+    }
     
+    // Override parent method to transfer department
+    @Override
     public void transferDepartment(String department)
     {
-        if (complaints[complaints.length - 1].contains("medication"))
+        if (Arrays.asList(complaints).contains("medication"))
         {
+            System.out.println("Patient needs medication");
             needsMedication = true;
         }
-        if (complaints[complaints.length - 1].contains("surgery"))
+        if (Arrays.asList(complaints).contains("surgery"))
         {
+            System.out.println("Patient needs surgery");
             needsSurgery = true;
         }
 
-        if (needsMedication)
-        {
-            System.out.println("Patient needs medication");
-        }
-        if (needsSurgery)
-        {
-            System.out.println("Patient needs surgery");
-        }
         setDepartment(department);
     }
+    // Override parent method to have surgery
+    @Override
     public void haveSurgery(String speciality)
     {
         System.out.println("\nPatient received " + speciality + " surgery");
     }
+    // Override method to prescribe medication
+    @Override
     public void prescribeMedication(String speciality)
     {
         System.out.println("\nPatient received " + speciality + " medication");
     }
+    // Override method to admit to inpatients
+    @Override
     public void admitInpatient(String department)
     {
         this.department = department;
         isInpatient = true;
         System.out.println("\nPatient has succesfully been admitted to " + this.department);
     }
+    // Override method to discharge from inpatients
+    @Override
     public void dischargeInpatient()
     {
         isInpatient = false;
         System.out.println("\nPatient has successfully been discharged");
     }
 
+    // Class constructor
     public CurrentPatient
             (String name, 
             boolean needsSurgery,
@@ -118,4 +151,34 @@ public class CurrentPatient extends Patient
         this.department = department;
         this.doctor = doctor;
     }
-}
+
+    public String[] patientToArray()
+    {
+        String[] patientDetails = new String[8];
+
+        patientDetails[0] = getName();
+        patientDetails[1] = Boolean.toString(isInpatient);
+        patientDetails[2] = Arrays.toString(complaints);
+        patientDetails[3] = Boolean.toString(needsMedication);
+        patientDetails[4] = Boolean.toString(needsSurgery);
+        patientDetails[5] = department;
+        patientDetails[6] = doctor;
+
+        return patientDetails;
+    }
+
+    // Override Object toString method to display patient details
+    @Override
+    public String toString()
+    {
+        System.out.printf("%-25s%-3s", "PatientID:", patientId);
+        System.out.printf("\n%-25s%-3s", "Name:", name);
+        System.out.printf("\n%-25s%-3s", "Department:", department);
+        System.out.printf("\n%-25s%-3s", "Doctor:", doctor);
+        System.out.printf("\n%-25s%-3s", "Complaints:", Arrays.toString(complaints));
+        System.out.printf("\n%-25s%-3s", "Surgery needed:", needsSurgery);
+        System.out.printf("\n%-25s%-3s", "Medication needed:", needsMedication);
+        System.out.println();
+        return "";
+    }
+} // Class

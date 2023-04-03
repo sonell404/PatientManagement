@@ -1,72 +1,83 @@
 package patientmanagement;
 
+import java.sql.SQLException;
+
 // SBA22075 - Sonel Ali
 
-// IMPORT LIST
+// Import list
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-// Main CLASS
+// Main class
 public class Main
 {
-    // CLASS SCANNER
+    // Class scanner
     static final Scanner INPUT = new Scanner(System.in);
-    // CURRENT DEPARTMENT
+
+    // Current department
     static Department currentDepartment = null;
-    // CURRENT DOCTOR
+    // Current doctor
     static Doctor currentDoctor = null;
-    // CURRENT PATIENT
+    // Current patient
     static CurrentPatient currentPatient = null;
-    // PATIENT TYPE
-    static boolean inPatient = false;
-    // PATIENT LIST
-    static List<Patient> patientList = new ArrayList<>();
-    // SYMPTOM LIST
+    // Patient name
+    static String patientName = null;
+    // Patient Id
+    static int patientId = 1;
+    // Symptom list
     static List<String> complaintList = new ArrayList<>();
-    // DEPARTMENT NAMES ARRAY
+    // Department names array
     static DepartmentNames[] departmentArray = DepartmentNames.values();
-    // MAIN CHECK ITEMS
-    static boolean isEmergency = false;
+
+    // Main check items
     static String department = null;
     static String speciality = null;
     static boolean needsSurgery = false;
     static boolean needsMedication = false;
-    // PATIENT NAME
-    static String patientName = null;
-    // PATIENT ID
-    static int patientId = 1;
 
-    // main METHOD
+    // Main method
     public static void main(String[] args)
     {
         // Loop until user ends program
         do
         {
-            // Display menu
+            // Display menu - menuId determines what menu to display - main menu or doctor menu
             displayOptions(1);
-            // Get and initialise menu selection
+            // Get and initialise menu selection - menuId determines what actions should be taken
             initialiseSelection(getMenuSelection(1), 1);
         }
         while (yesOrNo("\nContinue to main menu?"));
     }
 
-    // Methods for Main Menu display and Doctor Menu display
+    /*
+     * 
+     *     MENU METHODS
+     * 
+     */
+
+    // Method for displaying main menu and doctor menu
     static void displayOptions(int menuId)
     {
-        // If menuId == 1, show main menu
-        if (menuId == 1)
+        // If menuId == 1, and there is a current patient, show menu with doctor menu available
+        if (menuId == 1 && currentPatient != null)
         {
             System.out.println();
             System.out.println("1. Add Patient");
-            System.out.println("2. Update Patient");
-            System.out.println("3. Doctor Menu");
+            System.out.println("2. Doctor Menu");
+            System.out.println();
+        }
+        // If menuId == 1, and there is no current patient, show menu without doctor menu
+        else if ((menuId == 1 && currentPatient == null))
+        {
+            System.out.println();
+            System.out.println("1. Add Patient");
             System.out.println();
         }
         // If menuId == 2 and currentPatient is an inPatient, show Doctor Inpatient Menu
-        else if (menuId == 2 && inPatient)
+        else if (menuId == 2 && currentPatient.isInpatient())
         {
             System.out.println();
             System.out.println("1. Transfer To Department");
@@ -76,7 +87,7 @@ public class Main
             System.out.println();
         }
         // If menuId == 2 and currentPatient is not an inPatient, show Doctor Outpatient Menu
-        else if (menuId == 2 && !inPatient)
+        else if (menuId == 2 && !currentPatient.isInpatient())
         {
             System.out.println();
             System.out.println("1. Admit In-Patient");
@@ -93,9 +104,13 @@ public class Main
         int limit = 0;
 
         // Determine what menu is in use, set menu item limit appropriately
-        if (menuId == 1)
+        if (menuId == 1 && currentPatient != null)
         {
-            limit = 3;
+            limit = 2;
+        }
+        else if (menuId == 1 && currentPatient == null)
+        {
+            limit = 1;
         }
         else if (menuId == 2)
         {
@@ -123,7 +138,7 @@ public class Main
             else
             {
                 // Inform user that input must be valid
-                System.out.println("\nMenu selection must correspond to menu item!");
+                System.out.println("\nMenu selection must correspond to menu item!\n");
             }
         }
         while(true);
@@ -151,16 +166,17 @@ public class Main
         return selection > 0 && selection <= limit;
     } // isValidSelection
     // Method for executing users selection from Main Menu
-    static void initialiseSelection(int x, int menuId)
+    static void initialiseSelection(int selection, int menuId)
     {
-        if (menuId == 1)
+        // Setup available menu actions corresponding to what menu was shown
+        // If menuId == 1 and there is a current patient, show doctor options
+        if (menuId == 1 && currentPatient != null)
         {
             // Switch statement to call methods corresponding to users menu selection
-            switch (x)
+            switch (selection)
             {
                 case 1 : addPatient(); break;
-                case 2 : updatePatient(); break;
-                case 3 : 
+                case 2 : 
                 {
                     // Display Doctor Menu, get and initialise user selection
                     displayOptions(2);
@@ -168,11 +184,22 @@ public class Main
                 }
             }
         }
+        // If menuId == 1 and there is no current patient, hide doctor options
+        else if ((menuId == 1 && currentPatient == null))
+        {
+            // Switch statement to call methods corresponding to users menu selection
+            switch (selection)
+            {
+                case 1 : addPatient(); break;
+            }
+        }
+        // If menuId == 2, show doctor options
         else
         {
-            if (inPatient)
+            // Inpatient doctor options
+            if (currentPatient.isInpatient())
             {
-                switch (x)
+                switch (selection)
                 {
                     case 1 : transferPatient(); break;
                     case 2 : haveSurgery(); break;
@@ -180,9 +207,10 @@ public class Main
                     case 4 : dischargeInpatient(); break;
                 }
             }
-            else if (!inPatient)
+            // Outpatient doctor options
+            else if (!currentPatient.isInpatient())
             {
-                switch (x)
+                switch (selection)
                 {
                     case 1 : admitInpatient(); break;
                     case 2 : transferPatient(); break;
@@ -192,85 +220,119 @@ public class Main
             }
         }
     } // initialiseSelection
+
+    /*
+     * 
+     *     PROGRAM METHODS
+     * 
+     */
     
-    // Method to create and add patient to patientList
+    // Method to create and add patient
     static void addPatient() 
     {
-        // Remove current patient
+        // Reset patient variables
         currentPatient = null;
+        needsSurgery = false;
+        needsMedication = false;
 
         // Get patient name
         patientName = takeName();
-        // Take complaint string and scan for department names, medication 
+
+        // Take complaint string and scan for department names, medication, surgery needs.
+        // Loop until valid input has been retrieved.
         while (!complaintScanner(takeComplaint()))
         {
             System.out.println("\nInvalid input. Must contain department name. Please try again");
         }
+
         // Create appropriate department object for patient
         createDepartment();
         // Create appropriate doctor object for patient
         createDoctor();
         // Create patient
         createPatient();
-        // Assign patient to department object
-        assignPatientToDepartment(currentPatient);
         // Assign patient to doctor object
         assignPatientToDoctor(currentPatient);
-        // Set the department on the patient object
-        currentPatient.setDepartment(currentDepartment.getName());
-        // Set the doctor on the patient object
-        currentPatient.setDoctor(currentDoctor.getName());
-        // Add patient to patient list
-        patientList.add(currentPatient);
 
         // Inform user that patient entry has been successful
-        System.out.println("\nPatient has successfully been added.");
+        System.out.println("\nPatient has successfully been added.\n");
+        currentPatient.toString();
 
         // Ask user if they would like to see doctor options
         if (yesOrNo("\nContinue to doctor menu?"))
         {
-            displayOptions(2);
-            initialiseSelection(getMenuSelection(2), 2);
+            // Ensure options only show if doctor is available
+            if (currentDoctor.getName() != "DOCTOR UNAVAILABLE")
+            {
+                displayOptions(2);
+                initialiseSelection(getMenuSelection(2), 2);
+            }
+            // Inform user they need to wait for doctor to become available
+            else
+            {
+                System.out.println("\nThere is no doctor currently available. Please wait");
+            }
         }
     }
 
     // Method to get patient name
     static String takeName()
     {
+        // Variables for response, first name and last name
         String response;
         String firstName;
         String lastName;
 
+        // Loop until valid input has been retrieved
         do
         {
+            // Prompt user
             System.out.println("\nPlease enter first name");
             System.out.print(">");
+            // Take in user input
             response = INPUT.nextLine();
 
+            // Invalid if input is numeric
             if (isNumeric(response))
             {
+                // Inform user
                 System.out.println("\nInvalid input.");
+                // Return to beginning of loop
                 continue;
             }
             else
             {
+                // If valid, assign response to first name
                 firstName = response;
             }
 
-            System.out.println("\nPlease enter last name");
-            System.out.print(">");
-            response = INPUT.nextLine();
-            
-            if (isNumeric(response))
+            // New loop for second name
+            do
             {
-                System.out.println("\nInvalid input.");
-                continue;
+                // Prompt user
+                System.out.println("\nPlease enter last name");
+                System.out.print(">");
+                // Take in user input
+                response = INPUT.nextLine();
+                
+                // Invalid if numeric
+                if (isNumeric(response))
+                {
+                    // Prompt user
+                    System.out.println("\nInvalid input.");
+                    // Return to beginning of loop
+                    continue;
+                }
+                else
+                {
+                    // If valid, assign response to lst name and break from loop
+                    lastName = response;
+                    break;
+                }
             }
-            else
-            {
-                lastName = response;
-            }
+            while (true);
 
+            // Return combination of first and last name
             return firstName + " " + lastName;
         }
         while (true);
@@ -295,7 +357,7 @@ public class Main
             {
                 System.out.println("\nInvalid input");
             }
-            // If complaint contains a department name, ask about surgery
+            // Return response if valid
             else
             {
                 return response;
@@ -303,8 +365,10 @@ public class Main
         }
         while (true);
     }
+    // Method to parse user complaint string for keywords
     static boolean complaintScanner(String complaint)
     {
+        // Clear complaint list if already populated from previous entry
         if (complaintList.size() > 0)
         {
             complaintList.clear();
@@ -313,6 +377,7 @@ public class Main
         boolean validComplaint = false;
 
         // DEPARTMENT NAME PATTERNS
+
         // Cardiology pattern and matcher
         Pattern cardiologyPattern = Pattern.compile("(?i)\\bcardiology\\b");
         Matcher cardiologyMatcher = cardiologyPattern.matcher(complaint);
@@ -401,9 +466,9 @@ public class Main
         }
         else if (obgnMatcher.find())
         {
-            complaintList.add("obgyn");
-            speciality = "obgyn";
-            department = "obgyn";
+            complaintList.add("OB/GYN");
+            speciality = "OB/GYN";
+            department = "OB/GYN";
             needsSurgery = determineSurgeryNeed();
             validComplaint = true;
         }
@@ -414,10 +479,10 @@ public class Main
             department = "emergency";
             needsSurgery = determineSurgeryNeed();
             validComplaint = true;
-            isEmergency = true;
         }
         
-        // Check for medication key word excluded from department name check because only 1 department name can be selected
+        // Department name check must be if,else if structure, so only 1 is selected
+        // Medication check is separate as this could turn up as well as department name
         if (medicationMatcher.find())
         {
             complaintList.add("medication");
@@ -435,26 +500,33 @@ public class Main
         // SURGERY?
         if (yesOrNo("\nIs surgery needed?"))
         {
+            // Add to complaint list if yes
+            complaintList.add("surgery");
             return true;
         }
         else
         {
+            // return false if not
             return false;
         }
     }
-
+    // Method to create Department object
     static void createDepartment()
     {
         currentDepartment = new Department(department);
     }
+    // Method to et speciality needed
     static String getSpeciality()
     {
+        // Response variable
         String response;
 
+        // Loop unitl valid input has been retrieved
         do 
         {
+            // Display department names for speciality choices
             System.out.println();
-            for (DepartmentNames dpName : DepartmentNames.values())
+            for (DepartmentNames dpName : departmentArray)
             {
                 // Skip emergency value as it is not a valid speciality
                 if (dpName.getValue() == 9)
@@ -466,8 +538,10 @@ public class Main
             }
             System.out.println("\nPlease select a speciality");
 
+            // Take user response
             response = INPUT.nextLine();
 
+            // Validate response
             if (!isNumeric(response))
             {
                 System.out.println("\nInvalid input. Please select a valid option");
@@ -478,22 +552,28 @@ public class Main
             }
             else
             {
-                return response;
+                // If valid, display and return chosen speciality
+                System.out.println("\n" + departmentArray[Integer.parseInt(response) - 1].name());
+                return departmentArray[Integer.parseInt(response) - 1].name().replace("_", " ");
             }
         }
         while (true);
     }
+    // Method to create Doctor object
     static void createDoctor()
     {
+        // Only create doctor object if a valid Department object has been created and there is a valid speciality
         if (currentDepartment != null && speciality != null)
         {
             currentDoctor = new Doctor(currentDepartment, speciality, needsSurgery);
         }
         else
         {
+            // Inform user if there is no department
             System.out.println("\nNo current department");
         }
     }
+    // Method to create patient object
     static void createPatient()
     {
         if (currentDepartment != null && currentDoctor != null)
@@ -509,147 +589,204 @@ public class Main
                     currentDoctor.getName());
         }
     }
+    // Method to assign patient to doctor object
     static void assignPatientToDoctor(CurrentPatient patient)
     {
         currentDoctor.setCurrentPatient(patient);
     }
-    static void assignPatientToDepartment(CurrentPatient patient)
+    // Method to save patient data to database
+    static void savePatientData(String[] patientData)
     {
-        currentDepartment.addPatient(patient);
-        currentDepartment.setCurrentPatient(patient);
+        // Declare and initialise PatientDataLoader object
+        PatientDataLoader myLoader = new PatientDataLoader();
+        // Try block for creating database, creating table and inserting data
+        try 
+        {
+            if (!myLoader.databaseExists())
+            {
+                myLoader.createDB();
+                myLoader.createTable();
+            }
+            myLoader.insertData(patientData);
+        } 
+        // Multi-catch clause
+        catch (ClassNotFoundException | InstantiationException | IllegalAccessException | SQLException e) 
+        {
+            e.printStackTrace();
+        }
     }
 
-    static void updatePatient()
-    {
-        if (currentPatient == null)
-        {
-            System.out.println("\nNo current patient");
-        }
-        else
-        {
-            while (!complaintScanner(takeComplaint()))
-            {
-                System.out.println("\nInvalid complaint. Must contain a department name. Please try again");
-            }
-        }
-    }
+    /*
+     * 
+     *     DOCTOR METHODS
+     * 
+     */
+
+    // Method to transfer patient to new department
     static void transferPatient()
     {
-        String response;
-
+        // Inform user if there is no current patient in use, skip functionality if so
         if (currentPatient == null)
         {
             System.out.println("\nNo current patient");
         }
-        else if (currentDepartment == null)
+        // Validate if doctor has the ability to transfer patients
+        else if (!currentDoctor.getCanTransferPatient())
         {
-            System.out.println("\nNo current department");
-        }
-        else if (currentDoctor == null)
-        {
-            System.out.println("\nNo current doctor");
+            System.out.println("\nDoctor does not have the ability to transfer patients");
         }
         else
         {
-            do 
+            // Take complaint string and scan for department names, medication 
+            while (!complaintScanner(takeComplaint()))
             {
-                System.out.println();
-                for (DepartmentNames dpName : DepartmentNames.values())
-                {
-                    System.out.println(dpName.getValue() + " " + dpName.toString());
-                }
-                System.out.println("\nPlease select a department to transfer patient to");
+                System.out.println("\nInvalid input. Must contain department name. Please try again");
+            }
+            // Create appropriate department object for patient
+            createDepartment();
+            // Create appropriate doctor object for patient
+            createDoctor();
+            // Assign patient to doctor object
+            assignPatientToDoctor(currentPatient);
+            // Set the department on the patient object
+            currentPatient.transferDepartment(currentDepartment.getName());
+            // Set the doctor on the patient object
+            currentPatient.setDoctor(currentDoctor.getName());
+            // Update patient complaints list
+            currentPatient.setComplaints(complaintList.toArray(new String[complaintList.size()]));
 
-                response = INPUT.nextLine();
+            // Inform user that patient entry has been successful
+            System.out.println("\nPatient has successfully been updated.\n");
+            // Display patient details
+            currentPatient.toString();
 
-                if (!isNumeric(response))
+            // Ask user if they would like to see doctor options
+            if (yesOrNo("\nContinue to doctor menu?"))
+            {
+                // Only show doctor options if doctor is available, inform user if they aren't
+                if (currentDoctor.getName() != "DOCTOR UNAVAILABLE")
                 {
-                    System.out.println("\nInvalid input. Please select a valid option");
-                }
-                else if (Integer.parseInt(response) >= departmentArray.length || Integer.parseInt(response) <= 0)
-                {
-                    System.out.println("\nInvalid input. Please select a valid option");
+                    displayOptions(2);
+                    initialiseSelection(getMenuSelection(2), 2);
                 }
                 else
                 {
-                    currentDepartment.removePatient(currentPatient);
-                    currentDoctor.transferDepartment(response);
-                    currentDoctor.removeCurrentPatient();
-
-                    System.out.println("\nEnter new patient complaints");
-                    while (!complaintScanner(takeComplaint()))
-                    {
-                        System.out.println("\nInvalid complaint. Must contain department name. Please try again");
-                    }
-                    determineSurgeryNeed();
-                    currentDepartment = new Department(response);
-                    currentDoctor = new Doctor(currentDepartment, response, needsSurgery);
-
-                    break;
+                    System.out.println("\nThere is no doctor currently available. Please wait");
                 }
             }
-            while (true);
         }
     }
+    // Method to perform surgery on patient
     static void haveSurgery()
     {
+        // Only if there is a current doctor in use
         if (currentDoctor == null)
         {
             System.out.println("\nNo current doctor");
+        }
+        // Only if doctor has the ability to perform surgery
+        else if (!currentDoctor.getCanHaveOperations())
+        {
+            System.out.println("\nDoctor does not have the ability to perform surgery");
+        }
+        // Only if there is a current patient in use
+        else if (currentPatient == null)
+        {
+            System.out.println("\nNo current patient");
         }
         else
         {
             currentDoctor.haveSurgery();
         }
     }
+    // Method to prescribe medication
     static void prescribeMedication()
     {
+        // Only if there is a current doctor in use
         if (currentDoctor == null)
         {
             System.out.println("\nNo current doctor");
+        }
+        // Only if doctor has the ability to prescribe medication
+        else if(!currentDoctor.getCanPrescribeMedication())
+        {
+            System.out.println("\nDoctor does not have the ability to prescribe medication.");
+        }
+        // Only if there is a current patient in use
+        else if (currentPatient == null)
+        {
+            System.out.println("\nNo current patient");
         }
         else
         {
             currentDoctor.prescribeMedication();
         }
     }
+    // Method to discharge inpatients
     static void dischargeInpatient()
     {
+        // Only if there is a current doctor in use
         if (currentDoctor == null)
         {
             System.out.println("\nNo current doctor");
         }
-        else
+        // Only if the doctor has the ability to discharge inpatients
+        else if (!currentDoctor.getCanDischargeInPatients())
         {
-            currentDoctor.dischargeInpatient();
-            inPatient = false;
-            patientList.remove(currentPatient);
-            currentPatient = null;
-            System.out.println("\nPatient has successfully been discharged");
+            System.out.println("\nDoctor does not have the ability to discharge inpatients.");
         }
-    }
-    static void admitInpatient()
-    {
-        if (currentDoctor == null)
-        {
-            System.out.println("\nNo current doctor");
-        }
-        else
-        {
-            currentDoctor.admitInpatient();
-            inPatient = true;
-            System.out.println("\nPatient has successfully been admitted to inpatients");
-        }
-    }
-    static void dischargeOutpatient()
-    {
-        if (currentPatient == null)
+        // Only if there is a current patient in use
+        else if (currentPatient == null)
         {
             System.out.println("\nNo current patient");
         }
         else
         {
-            patientList.remove(currentPatient);
+            savePatientData(currentPatient.patientToArray());
+            currentDoctor.dischargeInpatient();
+            currentPatient = null;
+            System.out.println("\nPatient has successfully been discharged");
+        }
+    }
+    // Method to admit inpatients
+    static void admitInpatient()
+    {
+        // Only if there is a doctor available
+        if (currentDoctor == null || currentDoctor.getName() == "DOCTOR UNAVAILABLE")
+        {
+            System.out.println("\nNo current doctor");
+        }
+        // Only if the doctor has the ability to admit inpatients
+        else if (!currentDoctor.getCanAdmitPatients())
+        {
+            System.out.println("\nDoctor does not have the ability to admit inpatients.");
+        }
+        // Only if there is a current patient in use
+        else if (currentPatient == null)
+        {
+            System.out.println("\nNo current patient");
+        }
+        else
+        {
+            currentDoctor.admitInpatient();
+        }
+    }
+    // Method to discharge outpatient
+    static void dischargeOutpatient()
+    {
+        // Only if there is a current patient in use
+        if (currentPatient == null)
+        {
+            System.out.println("\nNo current patient");
+        }
+        // Only if there is a current doctor in use and available
+        else if (currentDoctor == null)
+        {
+            System.out.println("\nNo current doctor available");
+        }
+        else
+        {
+            savePatientData(currentPatient.patientToArray());
             currentPatient = null;
             System.out.println("\nPatient has successfully been discharged");
         }
@@ -693,6 +830,7 @@ public class Main
             }
         }
     } // yesOrNo
+
     // Method to check if String is alphabetical
     public static boolean isAlpha(String s)
     {
@@ -715,11 +853,4 @@ public class Main
         // Return true once validated
         return true;
     } // isNumeric
-
-    // Method to quit program with a 'goodbye' message
-    static void quitProgram()
-    {
-        System.out.println("\nGoodbye!");
-        System.exit(0);
-    } // quitProgram
 }
