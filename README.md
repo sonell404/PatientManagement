@@ -1,3 +1,3 @@
 This software will allow staff to input patient data, have the patient assigned to the appropriate department and doctors, and keep track of the patient and their data as they move through their stages of care.
 
-According to the brief, 
+According to the brief, there will be a Patient class used in program testing that implements an interface, but currently we only have access to the interface and not the class. To ensure the program works for who ever is testing next, I have created a Patient class with bare functionality according to the interface and then another CurrentPatient test class that extends the Patient class. This has allowed me to implement the functionality provided in the interface and also some extra functionality without prohibiting the next person from running the program with the currently unavailable Patient class.
