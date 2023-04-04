@@ -142,3 +142,15 @@ PatientInterface (Interface implemented by Patient)
 ENUMS:
 
 DepartmentNames
+    - Values:
+        CARDIOLOGY (1)
+        RHEUMATOLOGY (2)
+        ENT (3)
+        OPHTHALMOLOGY (4)
+        OCCUPATIONAL_THERAPY (5)
+        RADIOLOGY (6)
+        ONCOLOGY (7)
+        OB_GYN (8)
+        EMERGENCY (9)
+    - Methods:
+        getValue (Returns the value of each element, eg. 1, 2, 3, etc.)
