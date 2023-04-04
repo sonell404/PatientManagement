@@ -5,7 +5,7 @@ import org.junit.Test;
 
 public class MainTest 
 {
-    
+    // Test complaintScanner method of Main class
     // Before running this test, go to method in Main class and comment out call to determineSurgeryNeed()
     @Test
     public void testComplaintScanner()

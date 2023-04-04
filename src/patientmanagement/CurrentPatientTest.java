@@ -5,7 +5,7 @@ import org.junit.Test;
 
 public class CurrentPatientTest 
 {
-    
+    // Test getName method of CurrentPatient class
     @Test
     public void testGetName()
     {

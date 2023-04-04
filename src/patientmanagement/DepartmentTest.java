@@ -5,6 +5,7 @@ import org.junit.Test;
 
 public class DepartmentTest 
 {
+    // Test Department constructor
     @Test
     public void testDepartmentConstructor()
     {
