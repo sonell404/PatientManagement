@@ -5,6 +5,7 @@ import org.junit.Test;
 
 public class CurrentPatientTest 
 {
+    // Test comment for Development Branch commit
     // Test getName method of CurrentPatient class
     @Test
     public void testGetName()
