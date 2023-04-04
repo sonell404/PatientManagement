@@ -31,6 +31,10 @@ public class CurrentPatient extends Patient
     {
         return name;
     }
+    public void setName(String name)
+    {
+        this.name = name;
+    }
     public void setPatientID(int patientId)
     {
         this.patientId = patientId;
@@ -157,6 +161,16 @@ public class CurrentPatient extends Patient
         this.patientId = patientId;
         this.department = department;
         this.doctor = doctor;
+    }
+    public CurrentPatient()
+    {
+        name = "";
+        needsSurgery = false;
+        needsMedication = false;
+        complaints = new String[] {"item1", "item2", "item3"};
+        patientId = 0;
+        department = "";
+        doctor = "";
     }
 
     public String[] patientToArray()

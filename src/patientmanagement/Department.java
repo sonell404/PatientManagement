@@ -23,8 +23,6 @@ public class Department
     {
         return name;
     }
-
-    // Ability variables
     public boolean getCanPrescribeMedication()
     {
         return canPrescribeMedication;

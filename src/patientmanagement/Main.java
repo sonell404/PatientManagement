@@ -461,7 +461,7 @@ public class Main
             complaintList.add("oncology");
             speciality = "oncology";
             department = "oncology";
-            needsSurgery = determineSurgeryNeed();
+            //needsSurgery = determineSurgeryNeed();
             validComplaint = true;
         }
         else if (obgnMatcher.find())
