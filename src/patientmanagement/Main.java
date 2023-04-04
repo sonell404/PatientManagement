@@ -41,7 +41,7 @@ public class Main
     // Main method
     public static void main(String[] args)
     {
-        System.out.println("DEVELOPMENT BRANCH!!");
+        System.out.println("3rd COMMIT OF DEV BRANCH");
         // Loop until user ends program
         do
         {
