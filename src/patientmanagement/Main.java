@@ -831,12 +831,6 @@ public class Main
         }
     } // yesOrNo
 
-    // Method to check if String is alphabetical
-    public static boolean isAlpha(String s)
-    {
-        // Regex pattern allows letters and space only
-        return s.matches("^[a-zA-Z\\s]+$");
-    }
     // Method for validating numeric input
     static boolean isNumeric(String str)
     {

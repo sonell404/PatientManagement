@@ -156,17 +156,6 @@ public class PatientDataLoader
                                 + department + "', '"
                                 + doctor + "')";
 
-                // String query = "INSERT INTO patient_data (name, is_inpatient, complaints, needs_medication, needs_surgery, department, doctor)"
-                //                 + "VALUES ('" 
-                //                 + name + "', " 
-                //                 + is_inpatient + ", '" 
-                //                 + complaints + "', " 
-                //                 + needs_medication + ", " 
-                //                 + needs_surgery + ", '" 
-                //                 + department + "', '" 
-                //                 + doctor + "')";
-
-
                 // Execute query
                 stmnt.execute(query);
                 // Inform user table has successfully been created

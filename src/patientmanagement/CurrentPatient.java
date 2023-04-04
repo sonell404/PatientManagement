@@ -26,6 +26,7 @@ public class CurrentPatient extends Patient
     private String doctor;
 
     // Getters & Setters
+    @Override
     public String getName()
     {
         return name;
@@ -34,6 +35,7 @@ public class CurrentPatient extends Patient
     {
         this.patientId = patientId;
     }
+    @Override
     public int getPatientId()
     {
         return patientId;
@@ -53,6 +55,7 @@ public class CurrentPatient extends Patient
             needsSurgery = true;
         }
     }
+    @Override
     public String[] getComplaints()
     {
         return complaints;
@@ -61,6 +64,7 @@ public class CurrentPatient extends Patient
     {
         this.department = department;
     }
+    @Override
     public String getDepartment()
     {
         return department;
@@ -75,14 +79,17 @@ public class CurrentPatient extends Patient
     }
 
     // Boolean check methods
+    @Override
     public boolean isInpatient()
     {
         return isInpatient;
     }
+    @Override
     public boolean needsMedication()
     {
         return needsMedication;
     }
+    @Override
     public boolean needsSurgery()
     {
         return needsSurgery;
